@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Handlebars</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheets/appy.css">
+  <script type= "text/javascript", src= "../javascript/handlebars.js"></script>
+  <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  <!-- Template goes inside of this handlebar script here -->
+  <script id="post-template" type="text/x-handlebars-template">
+    <div>
+      <h1>{{title}}</h1>
+      <h4>{{date}}</h4>
+      <p>{{body}}</p>
+      {{#if author}}
+        <h2>By {{fullname author.first_name author.last_name}}</h2>
+      {{else}}
+        <h2>Author Unknown</h2>
+      {{/if}}
+
+      {{#each comments}}
+        <p>{{body}}</p>
+      {{else}}
+        <p>No comments</p>
+      {{/each}}
+    </div>
+  </script>
+</head>
+<body>
+  <script>
+  // Makes a function called full_name
+  Handlebars.registerHelper('fullname', function(first_name, last_name) {
+  return first_name + " " + last_name;
+})
+
+  // Getting live data from the server
+    $.ajax({
+      type: 'GET',
+      url: 'http:localhost:3000/posts.json',
+      dataType: 'json'
+      }).done(function(data) {
+      var source = $("#post-template").html();
+      var template = Handlebars.compile(source);
+      $('body').append(template(data));
+    }).fail(function (request, status, error) {
+      console.log(error);
+    })
+
+    $(window).scroll(function() {
+        // Cache our jQuery selector for window
+        var win = $(window);
+
+        // Infinite scroll math!
+        if(win.height() + win.scrollTop() >= $(document).height()) {
+            alert("At the bottom")
+        }
+    });
+
+
+
+  // // Get this data into the template with the id - "post-template"
+  //     var post = {
+  //       title: "My first handlebar template!",
+  //       date: "Yesterday",
+  //       body: "Lorem Ipsum"
+  //     }
+  //     // Selects the template (in the <head> script tag)
+  //     var source = $('#post-template').html();
+  //     // Compiles (with Handlebars) template
+  //     var template = Handlebars.compile(source);
+  //     // Inserts the data into the Handlebars template
+  //     var templatedHTML = template(post)
+  //     // Append the templated HTML to the body
+  //     $('body').append(templatedHTML);
+  </script>
+
+
+</body>
+
+</html>
